@@ -6,35 +6,32 @@ import data from './data';
 import Navigation from './components/Navigation';
 import Products from './components/Products';
 import ShoppingCart from './components/ShoppingCart';
+import ProductContext from './context/ProductContext';
+import CartContext from './context/CartContext';
 
 function App() {
 	const [products] = useState(data);
 	const [cart, setCart] = useState([]);
-
 	const addItem = item => {
 		setCart([...cart, item]);
 	};
 
 	return (
 		<div className="App">
-			<Navigation cart={cart} />
+			<CartContext.Provider value={cart}>
+				<Navigation cart={cart} />
+			</CartContext.Provider>
+			
+			<ProductContext.Provider value={{products, addItem}}>
+				{/* Routes */}
+				<Route exact path="/" component={Products}/>
 
-			{/* Routes */}
-			<Route
-				exact
-				path="/"
-				render={() => (
-					<Products
-						products={products}
-						addItem={addItem}
-					/>
-				)}
-			/>
-
-			<Route
-				path="/cart"
-				render={() => <ShoppingCart cart={cart} />}
-			/>
+				<CartContext.Provider value={cart}>
+					<Route path="/cart" component={ShoppingCart}/>
+				</CartContext.Provider>
+			</ProductContext.Provider>		
+			
+			
 		</div>
 	);
 }
